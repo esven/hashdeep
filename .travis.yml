@@ -1,0 +1,39 @@
+# Copyright Sven Ebenfeld <sven.ebenfeld@gmail.com>
+# SPDX-License-Identifier:	GPL-2.0+
+
+# build Hashdeep on Travis CI - https://travis-ci.org/
+
+dist: trusty
+language: c++
+env:
+  global:
+    secure: qRhzuEG82fxmFOkLFzvavcJxboFoCSBP8YMsFSWbOpvwVsPP2eeGo95YtY+ltGpQfNINrZg7fqZAma3xa9GpO5ceGXlGPBlO/b1ZcrXIkU3UuqfHJ53YoRjBMFpsR5dCTtVGDfCu7QSjw/nSWkdyvESJro9dARdauSdbgcg5cN0lfbEwldEwuAU2ReytHyhlkQPjQ9fXPFfxha0IibkiMHR1gTpAqAqa1BMiomehy7yuH91vbs1EFx2ha045WLtodQJ3Jaka3sDMv294glT4HDWSYRKpsA0nhcfbBUHew2uiy2yHhoada+ZAyn4KdCteHWYnp453ev+qQ35ulRP5Lbxv/lK6rwG3b1TErVv38nX3WkD1g8soItpi2TZTumfXjA+ZFWbhGprGvFhGwS3FiR+CI3PfvSKc5lDrCVgtEw3eSKsIknYaCKCWWLyPO1zI4hTOAE05E8FNDPoH/2hQUAUR83yxSmQtWIEfVBa/4eIpD30l8ICfFez7MMRij+l6uVWFeuS96Pv99o/ypLQhY0b49qjC1Ql5ykDnhh+/U3fIt49zyQs7pWf4tHZ/ZYGD9vHpAdHZTJIWnM7Zx2M3EsmrFm6e2WseIM/LYpe1AnaP//iVidKnNIZELAATudalbbJtB7zijSA/xeyIccka4ij2SeoVRW0yoUrMk3o6v9E=
+addons:
+  apt:
+    packages:
+    - md5deep
+os:
+- linux
+- osx
+compiler:
+- gcc
+- clang
+before_script:
+- md5deep -v
+- sha1deep -v
+- sha256deep -v
+- whirlpooldeep -v
+- tigerdeep -v
+script:
+- "./bootstrap.sh"
+- "./configure && make -j 4 && make check GOOD_DIR=/usr/bin"
+- mkdir inst; make install DESTDIR=${PWD}/inst
+addons:
+  coverity_scan:
+    project:
+      name: "esven/hashdeep"
+      description: "This is md5deep, a set of cross-platform tools to compute hashes, or message digests, for any number of files while optionally recursively digging through the directory structure. It can also take a list of known hashes and display the filenames of input files whose hashes either do or do not match any of the known hashes. This version supports MD5, SHA-1, SHA-256, Tiger, and Whirlpool hashes."
+    notification_email: sven@ebenfeld.de
+    build_command_prepend: "./bootstrap.sh; ./configure ; make clean"
+    build_command:   "make -j 4"
+    branch_pattern: coverity_scan

@@ -96,13 +96,25 @@ if [ ! -d $TMP ]; then
 fi
 
 good_ver=`$GOOD_BIN/md5deep -v`
+if [ "$good_ver" == "" ]; then
+  echo Error getting version of $GOOD_BIN/md5deep -v
+  echo Exiting test in failure state.
+  exit 1
+fi
 test_ver=`$TEST_BIN/md5deep -v`
+if [ "$test_ver" == "" ]; then
+  echo Error getting version of $TEST_BIN/md5deep -v
+  echo Exiting test in failure state.
+  exit 1
+fi
 echo REFERENCE VERSION: $good_ver
 echo TEST VERSION:      $test_ver
 if [ $good_ver = $test_ver ]; then
   echo It makes no sense to test a version against itself.
   echo Press return to continue test, ^c to terminate.
+  if [ "x${TRAVIS}" != "xtrue" ]; then
   read
+  fi
 fi
 echo Reference output will go to ref/
 echo Test output will go to tst/
